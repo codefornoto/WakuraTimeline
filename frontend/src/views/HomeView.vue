@@ -6,6 +6,7 @@ import type { eventType } from '../types/event'
 import { useRoute } from 'vue-router'
 const route = useRoute()
 
+const loading = ref(true)
 const id = route.query.id as string ?? "test"
 const data = ref<eventType[]>([])
 const title = (id === "monzen" ? "～輪島市門前町~" : "~七尾~")
@@ -17,19 +18,9 @@ async function fetchData() {
 }
 
 onMounted(async () => {
-  const loader = document.getElementById('loader')
-  const content = document.getElementById('content')
-
-  window.addEventListener('load', () => {
-    setTimeout(() => {
-      if (loader) {
-        loader.classList.add('hidden')
-      }
-      if (content) {
-        content.style.display = 'block'
-      }
-    }, 5000)
-  })
+  setTimeout(() => {
+    loading.value = false
+  }, 3000)
 
   await fetchData()
 })
@@ -37,7 +28,7 @@ onMounted(async () => {
 
 <template>
   <main>
-    <div class="loader-container" id="loader">
+    <div v-if="loading" class="loader-container" >
       <DotLottieVue
         src="https://lottie.host/0db29b43-8969-4d70-937f-73216901e4f9/1lIBGa3JSm.lottie"
         background="transparent"
