@@ -8,6 +8,8 @@ const route = useRoute()
 
 const id = route.query.id as string ?? "test"
 const data = ref<eventType[]>([])
+const title = (id === "monzen" ? "～輪島市門前町~" : "~七尾~")
+const isMobile = ref(window.innerWidth < 768)
 
 async function fetchData() {
   const response = await getGSData(id)
@@ -49,7 +51,7 @@ onMounted(async () => {
       <div class="container">
         <h1>
           能登の年表 <br />
-          ～輪島市門前町Ver.～
+          {{ title }}
         </h1>
       </div>
     </section>
@@ -62,7 +64,7 @@ onMounted(async () => {
           :data-category="item.genre"
           :class="[
             'in-view',
-            item.category === '国' ? 'left' : 'right',
+            isMobile ? 'left' : (item.category === '国' ? 'left' : 'right'),
             item.genre === '災害' ? 'disaster' : '',
           ]"
         >
