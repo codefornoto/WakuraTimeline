@@ -1,0 +1,12 @@
+{
+    "name": "noto_timeline",
+    "private": true,
+    "workspaces": [
+      "backend",
+      "frontend"
+    ],
+    "dependencies": {
+      "backend": "^0.0.1",
+      "frontend": "^0.0.1"
+    }
+  }
