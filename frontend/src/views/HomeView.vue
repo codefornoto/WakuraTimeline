@@ -6,7 +6,7 @@ import type { eventType } from '../types/event'
 import { useRoute } from 'vue-router'
 const route = useRoute()
 
-const id = route.query.id as string
+const id = route.query.id as string ?? "test"
 const data = ref<eventType[]>([])
 
 async function fetchData() {
