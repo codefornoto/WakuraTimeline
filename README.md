@@ -20,3 +20,28 @@
 
 1. スプレッドシートにシートを追加
 2. [config.ts](./frontend/src/config.ts) にページタイトルを追加
+
+
+## ローカルでの動かし方
+
+### 事前準備
+
+* git install
+  * [手順](https://git-scm.com/downloads)
+* nodejs install
+  * [手順](https://nodejs.org/en/download)
+* npm install  
+  * [手順](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
+  * nodejsがインストールされていれば、ターミナルコマンドプロンプトで```npm install -g npm```すればOK（たぶん）
+
+### 起動方法
+
+githubからファイルダウンロード〜必要なライブラリインストール~起動
+
+以下をターミナル/コマンドプロンプトで実行
+```
+git clone https://github.com/codefornoto/NotoTimeline
+cd NotoTimeline/frontend
+npm install
+npm run dev
+```
