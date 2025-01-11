@@ -11,7 +11,7 @@ const route = useRoute()
 const loading = ref(true)
 const id = route.query.id as string ?? "test"
 const eventList = ref<eventType[]>([])
-const title = (() => {
+const title: string = (() => {
   return TITLE[id] ?? "未定義のタイトル";
 })()
 const isMobile = ref(window.innerWidth < 768)
