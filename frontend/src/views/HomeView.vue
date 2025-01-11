@@ -9,7 +9,7 @@ import { TITLE } from "../config"
 const route = useRoute()
 
 const loading = ref(true)
-const id = route.query.id as string ?? "test"
+const id = route.query.id as keyof typeof TITLE ?? "test"
 const eventList = ref<eventType[]>([])
 const title: string = (() => {
   return TITLE[id] ?? "未定義のタイトル";
