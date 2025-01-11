@@ -4,17 +4,21 @@ import { DotLottieVue } from '@lottiefiles/dotlottie-vue'
 import getGSData from '../services/getData'
 import type { eventType } from '../types/event'
 import { useRoute } from 'vue-router'
+import { TITLE } from "../config"
+
 const route = useRoute()
 
 const loading = ref(true)
-const id = route.query.id as string ?? "test"
-const data = ref<eventType[]>([])
-const title = (id === "monzen" ? "～輪島市門前町~" : "~七尾~")
+const id = route.query.id as keyof typeof TITLE ?? "test"
+const eventList = ref<eventType[]>([])
+const title: string = (() => {
+  return TITLE[id] ?? "未定義のタイトル";
+})()
 const isMobile = ref(window.innerWidth < 768)
 
 async function fetchData() {
   const response = await getGSData(id)
-  data.value = response
+  eventList.value = response
 }
 
 onMounted(async () => {
@@ -42,17 +46,17 @@ onMounted(async () => {
       <div class="container">
         <h1>
           能登の年表 <br />
-          {{ title }}
+          〜{{ title }}〜
         </h1>
       </div>
     </section>
     <section class="timeline">
       <ul>
         <li
-          v-for="(item, index) in data"
+          v-for="(item, index) in eventList"
           :key="index"
-          :data-position="item.category"
-          :data-category="item.genre"
+          :eventList-position="item.category"
+          :eventList-category="item.genre"
           :class="[
             'in-view',
             isMobile ? 'left' : (item.category === '国' ? 'left' : 'right'),
