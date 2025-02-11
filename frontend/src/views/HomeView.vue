@@ -59,7 +59,7 @@ onMounted(async () => {
           :eventList-category="item.genre"
           :class="[
             'in-view',
-            isMobile ? 'left' : item.category === '国' ? 'left' : 'right',
+            isMobile ? 'left' : item.image === '' ? 'right' : 'left',
             item.genre === '災害' ? 'disaster' : '',
           ]"
         >
