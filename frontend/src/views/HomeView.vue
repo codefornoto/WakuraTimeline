@@ -65,8 +65,6 @@ onMounted(async () => {
         >
           <div>
             <time>{{ item.year }}</time> {{ item.era }} {{ item.event }}
-          </div>
-          <div>
             <img :src="item.image" style="width: 100%; height: auto" alt="" />
           </div>
         </li>
