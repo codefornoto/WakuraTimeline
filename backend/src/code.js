@@ -38,6 +38,7 @@ function setJsonKey(row, headers) {
     etc: row[headers.indexOf("補足情報")],
     genre: row[headers.indexOf("ジャンル")],
     reference: row[headers.indexOf("出典")],
+    image: row[headers.indexOf("画像URL")],
   };
 }
 

@@ -6,4 +6,5 @@ export interface eventType {
   etc: string
   genre: string
   reference: string
+  image: string
 }
