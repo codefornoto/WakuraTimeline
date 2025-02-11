@@ -4,15 +4,15 @@ import { DotLottieVue } from '@lottiefiles/dotlottie-vue'
 import getGSData from '../services/getData'
 import type { eventType } from '../types/event'
 import { useRoute } from 'vue-router'
-import { TITLE } from "../config"
+import { TITLE } from '../config'
 
 const route = useRoute()
 
 const loading = ref(true)
-const id = route.query.id as keyof typeof TITLE ?? "test"
+const id = (route.query.id as keyof typeof TITLE) ?? 'wakura'
 const eventList = ref<eventType[]>([])
 const title: string = (() => {
-  return TITLE[id] ?? "未定義のタイトル";
+  return TITLE[id] ?? '未定義のタイトル'
 })()
 const isMobile = ref(window.innerWidth < 768)
 
@@ -32,7 +32,7 @@ onMounted(async () => {
 
 <template>
   <main>
-    <div v-if="loading" class="loader-container" >
+    <div v-if="loading" class="loader-container">
       <DotLottieVue
         src="https://lottie.host/0db29b43-8969-4d70-937f-73216901e4f9/1lIBGa3JSm.lottie"
         background="transparent"
@@ -59,12 +59,15 @@ onMounted(async () => {
           :eventList-category="item.genre"
           :class="[
             'in-view',
-            isMobile ? 'left' : (item.category === '国' ? 'left' : 'right'),
+            isMobile ? 'left' : item.category === '国' ? 'left' : 'right',
             item.genre === '災害' ? 'disaster' : '',
           ]"
         >
           <div>
             <time>{{ item.year }}</time> {{ item.era }} {{ item.event }}
+          </div>
+          <div>
+            <img :src="item.image" style="width: 100%; height: auto" alt="" />
           </div>
         </li>
       </ul>
