@@ -5,7 +5,7 @@ const FOLDER_ID = "13QnuoOMgOyb2u_8WP4cAcV6zNzsTTI2w"; // 画像を保存する 
 
 function doGet(e) {
   const sheetName = e.parameter.sheetName;
-  const response = getSheetData(sheetName, e);
+  const response = getSheetData(sheetName, e).getContent();
 
   return ContentService.createTextOutput(response).setMimeType(
     ContentService.MimeType.JSON
