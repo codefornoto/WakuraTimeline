@@ -1,26 +1,87 @@
 <template>
-  <v-container>
-    <v-form ref="form" @submit.prevent="uploadData">
-      <h3>イベント登録</h3>
-
-      <v-text-field v-model="year" label="年 (year)" required></v-text-field>
-
-      <v-text-field v-model="era" label="時代 (era)" required></v-text-field>
-
-      <v-text-field v-model="category" label="カテゴリ (category)" required> </v-text-field>
-
-      <v-text-field v-model="event" label="イベント (event)" required></v-text-field>
-
-      <v-text-field v-model="etc" label="詳細 (etc)"></v-text-field>
-
-      <v-text-field v-model="genre" label="ジャンル (genre)"></v-text-field>
-
-      <v-text-field v-model="reference" label="参照 (reference)"></v-text-field>
-
-      <v-file-input v-model="image" label="画像 (image)" accept="image/*" required></v-file-input>
-
-      <v-btn color="primary" type="submit">アップロード</v-btn>
+  <v-container fluid class="p-4 md:p-8">
+    <v-form ref="form" @submit.prevent="uploadData" class="upload-form">
+      <h3 class="text-lg md:text-2xl">イベント登録</h3>
+      <v-text-field
+        v-model="year"
+        label="年 (year)"
+        variant="underlined"
+        class="mb-4"
+      ></v-text-field>
+      <v-text-field
+        v-model="era"
+        label="時代 (era)"
+        variant="underlined"
+        class="mb-4"
+      ></v-text-field>
+      <v-text-field
+        v-model="category"
+        label="カテゴリ (category)"
+        variant="underlined"
+        class="mb-4"
+      ></v-text-field>
+      <v-text-field
+        v-model="event"
+        label="イベント (event)"
+        variant="underlined"
+        class="mb-4"
+      ></v-text-field>
+      <v-text-field
+        v-model="etc"
+        label="詳細 (etc)"
+        variant="underlined"
+        class="mb-4"
+      ></v-text-field>
+      <v-text-field
+        v-model="genre"
+        label="ジャンル (genre)"
+        variant="underlined"
+        class="mb-4"
+      ></v-text-field>
+      <v-text-field
+        v-model="reference"
+        label="参照 (reference)"
+        variant="underlined"
+        class="mb-4"
+      ></v-text-field>
+      <div class="flex items-center mb-4 flex-col md:flex-row">
+        <v-file-input
+          v-model="image"
+          label="画像 (image)"
+          accept="image/*"
+          variant="underlined"
+          @change="previewImage"
+          class="flex-1 mr-2"
+        >
+        </v-file-input>
+        <img
+          v-if="thumbnail"
+          :src="thumbnail"
+          alt="サムネイル"
+          class="w-full max-w-xs"
+          width="350px"
+        />
+      </div>
+      <v-btn color="primary" type="submit" :disabled="isSubmitting">アップロード</v-btn>
     </v-form>
+
+    <v-dialog v-model="isSubmitting" persistent>
+      <v-card>
+        <v-card-title>アップロード中...</v-card-title>
+        <v-card-text>
+          <v-progress-circular indeterminate color="primary"></v-progress-circular>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="successDialog" persistent>
+      <v-card>
+        <v-card-title>アップロード成功！</v-card-title>
+        <v-card-actions>
+          <v-btn color="primary" @click="successDialog = false">閉じる</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -37,6 +98,9 @@ const etc = ref('')
 const genre = ref('')
 const reference = ref('')
 const image = ref<File | null>(null)
+const thumbnail = ref<string | null>(null)
+const isSubmitting = ref(false)
+const successDialog = ref(false)
 
 async function compressImage(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -77,7 +141,20 @@ async function compressImage(file: File): Promise<string> {
   })
 }
 
+async function previewImage() {
+  if (image.value) {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      thumbnail.value = e.target?.result as string
+    }
+    reader.readAsDataURL(image.value)
+  } else {
+    thumbnail.value = null
+  }
+}
+
 async function uploadData() {
+  isSubmitting.value = true
   const formData = new FormData()
   formData.append('year', year.value)
   formData.append('era', era.value)
@@ -93,6 +170,7 @@ async function uploadData() {
     formData.append('imageName', image.value.name)
   } else {
     alert('画像を選択してください')
+    isSubmitting.value = false
     return
   }
 
@@ -104,7 +182,7 @@ async function uploadData() {
     const response = await registerEvent(formData)
 
     if (response.status === 'success') {
-      alert('アップロード成功！')
+      successDialog.value = true
     } else {
       console.log(response)
       alert('アップロード失敗！')
@@ -112,6 +190,15 @@ async function uploadData() {
   } catch (error) {
     console.error('Error:', error)
     alert('エラーが発生しました。')
+  } finally {
+    isSubmitting.value = false
   }
 }
 </script>
+
+<style scoped>
+.upload-form {
+  max-width: 600px; /* 最大幅を設定 */
+  margin: auto; /* 中央揃え */
+}
+</style>

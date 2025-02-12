@@ -16,13 +16,32 @@ function getSheetData(sheetName, e) {
   const sheet = SpreadsheetApp.openByUrl(sheetUrl).getSheetByName(sheetName);
   const data = sheet.getDataRange().getValues();
   const headers = data[0];
+  const yearIndex = headers.indexOf("西暦");
+  const eraIndex = headers.indexOf("年号");
+  const categoryIndex = headers.indexOf("区分");
+  const eventIndex = headers.indexOf("出来事");
+  const etcIndex = headers.indexOf("補足情報");
+  const genreIndex = headers.indexOf("ジャンル");
+  const referenceIndex = headers.indexOf("出典");
+  const imageIndex = headers.indexOf("画像URL");
   const items = [];
 
   // ヘッダー行をスキップしてデータを処理
   for (let i = 1; i < data.length; i++) {
     const row = data[i];
     let item;
-    item = setJsonKey(row, headers);
+    item = setJsonKey(
+      row,
+      headers,
+      yearIndex,
+      eraIndex,
+      categoryIndex,
+      eventIndex,
+      etcIndex,
+      genreIndex,
+      referenceIndex,
+      imageIndex
+    );
     items.push(item);
   }
 
@@ -34,16 +53,27 @@ function getSheetData(sheetName, e) {
   ).setMimeType(ContentService.MimeType.JSON);
 }
 
-function setJsonKey(row, headers) {
+function setJsonKey(
+  row,
+  headers,
+  yearIndex,
+  eraIndex,
+  categoryIndex,
+  eventIndex,
+  etcIndex,
+  genreIndex,
+  referenceIndex,
+  imageIndex
+) {
   return {
-    year: row[headers.indexOf("西暦")],
-    era: row[headers.indexOf("年号")],
-    category: row[headers.indexOf("区分")],
-    event: row[headers.indexOf("出来事")],
-    etc: row[headers.indexOf("補足情報")],
-    genre: row[headers.indexOf("ジャンル")],
-    reference: row[headers.indexOf("出典")],
-    image: row[headers.indexOf("画像URL")],
+    year: row[yearIndex],
+    era: row[eraIndex],
+    category: row[categoryIndex],
+    event: row[eventIndex],
+    etc: row[etcIndex],
+    genre: row[genreIndex],
+    reference: row[referenceIndex],
+    image: row[imageIndex],
   };
 }
 
@@ -63,7 +93,8 @@ function uploadFile(formData) {
 
 function updateSheet(formData) {
   const fileUrl = uploadFile(formData);
-  var sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName("Events");
+  const sheet =
+    SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName("Events");
   sheet.appendRow([
     formData.year,
     formData.era,
@@ -79,12 +110,12 @@ function updateSheet(formData) {
 function doPost(e) {
   try {
     const formData = e.parameter;
-    const response = updateSheet(formData);
+    updateSheet(formData);
 
     const output = ContentService.createTextOutput(
       JSON.stringify({
         status: "success",
-        data: response,
+        data: null,
       })
     ).setMimeType(ContentService.MimeType.JSON);
 
@@ -97,42 +128,4 @@ function doPost(e) {
       })
     ).setMimeType(ContentService.MimeType.JSON);
   }
-}
-
-function testUploadFile() {
-  var formData = {
-    year: "2025",
-    era: "Reiwa",
-    category: "Test",
-    event: "Dummy Image Upload",
-    etc: "N/A",
-    genre: "Testing",
-    reference: "N/A",
-    imageName: "dummy.jpg",
-    imageData: "R0lGODdhAQABAIABAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==", // 1x1ピクセルのGIF画像
-  };
-
-  var response = uploadFile(formData);
-}
-
-function testDoPost() {
-  var formData = {
-    year: "2025",
-    era: "Reiwa",
-    category: "Test",
-    event: "Dummy Image Upload",
-    etc: "N/A",
-    genre: "Testing",
-    reference: "N/A",
-    imageName: "dummyPost.jpg",
-    imageData: "R0lGODdhAQABAIABAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==", // 1x1ピクセルのGIF画像
-  };
-
-  var mockEvent = {
-    postData: {
-      contents: JSON.stringify(formData),
-    },
-  };
-
-  var response = doPost(mockEvent);
 }
