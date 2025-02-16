@@ -84,11 +84,12 @@ function uploadFile(formData) {
     "image/jpeg",
     formData.imageName
   );
-  const file = folder.createFile(blob);
-
-  const fileId = file.getId();
-  const fileUrl = "https://lh3.googleusercontent.com/d/" + fileId; // 画像表示用のURL
-  return fileUrl;
+  if (formData.imageData !== "") {
+    const file = folder.createFile(blob);
+    const fileId = file.getId();
+    return "https://lh3.googleusercontent.com/d/" + fileId;
+  }
+  return "";
 }
 
 function updateSheet(formData) {
