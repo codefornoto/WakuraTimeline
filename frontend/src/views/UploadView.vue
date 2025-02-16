@@ -174,9 +174,8 @@ async function uploadData() {
     formData.append('imageData', '')
     formData.append('imageName', '')
   }
-
   try {
-    const response = await registerEvent(formData, id)
+    const response = await registerEvent(formData, id as string)
 
     if (response.status === 'success') {
       successDialog.value = true
