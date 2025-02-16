@@ -4,35 +4,31 @@
       <h3 class="text-lg md:text-2xl">イベント登録</h3>
       <v-text-field
         v-model="year"
-        label="年 (year)"
+        label="西暦(（例：1990 不明な場合は「～頃」「不詳」も可）)"
         variant="underlined"
         class="mb-4"
       ></v-text-field>
       <v-text-field
         v-model="era"
-        label="時代 (era)"
+        label="和暦（例：平成2年　不明な場合は「平成年間」「不詳」も可）"
         variant="underlined"
         class="mb-4"
       ></v-text-field>
-      <v-text-field
+      <v-select
         v-model="category"
+        :items="categories"
         label="カテゴリ (category)"
         variant="underlined"
         class="mb-4"
-      ></v-text-field>
+      ></v-select>
       <v-text-field
         v-model="event"
-        label="イベント (event)"
+        label="思い出や出来事"
         variant="underlined"
         class="mb-4"
       ></v-text-field>
-      <v-text-field
-        v-model="etc"
-        label="詳細 (etc)"
-        variant="underlined"
-        class="mb-4"
-      ></v-text-field>
-      <v-text-field
+      <v-text-field v-model="etc" label="備考" variant="underlined" class="mb-4"></v-text-field>
+      <!-- <v-text-field
         v-model="genre"
         label="ジャンル (genre)"
         variant="underlined"
@@ -43,7 +39,7 @@
         label="参照 (reference)"
         variant="underlined"
         class="mb-4"
-      ></v-text-field>
+      ></v-text-field> -->
       <div class="flex items-center mb-4 flex-col md:flex-row">
         <v-file-input
           v-model="image"
@@ -88,11 +84,12 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { registerEvent } from '@/services/registerEvent'
+import { useRoute } from 'vue-router'
 
 const form = ref(null)
 const year = ref('')
 const era = ref('')
-const category = ref('')
+const category = ref('郷土')
 const event = ref('')
 const etc = ref('')
 const genre = ref('')
@@ -101,6 +98,11 @@ const image = ref<File | null>(null)
 const thumbnail = ref<string | null>(null)
 const isSubmitting = ref(false)
 const successDialog = ref(false)
+
+const route = useRoute()
+const id = route.query.id ?? 'wakura'
+// カテゴリの選択肢
+const categories = ['郷土', '国']
 
 async function compressImage(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -169,17 +171,11 @@ async function uploadData() {
     formData.append('imageData', compressedImage.split(',')[1])
     formData.append('imageName', image.value.name)
   } else {
-    alert('画像を選択してください')
-    isSubmitting.value = false
-    return
+    formData.append('imageData', '')
+    formData.append('imageName', '')
   }
-
   try {
-    // formDataの内容をコンソールに出力
-    formData.forEach((value, key) => {
-      console.log(`${key}: ${value}`)
-    })
-    const response = await registerEvent(formData)
+    const response = await registerEvent(formData, id as string)
 
     if (response.status === 'success') {
       successDialog.value = true

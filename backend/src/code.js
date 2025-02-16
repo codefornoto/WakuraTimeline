@@ -5,7 +5,7 @@ const FOLDER_ID = "13QnuoOMgOyb2u_8WP4cAcV6zNzsTTI2w"; // 画像を保存する 
 
 function doGet(e) {
   const sheetName = e.parameter.sheetName;
-  const response = getSheetData(sheetName, e);
+  const response = getSheetData(sheetName, e).getContent();
 
   return ContentService.createTextOutput(response).setMimeType(
     ContentService.MimeType.JSON
@@ -84,17 +84,18 @@ function uploadFile(formData) {
     "image/jpeg",
     formData.imageName
   );
-  const file = folder.createFile(blob);
-
-  const fileId = file.getId();
-  const fileUrl = "https://lh3.googleusercontent.com/d/" + fileId; // 画像表示用のURL
-  return fileUrl;
+  if (formData.imageData !== "") {
+    const file = folder.createFile(blob);
+    const fileId = file.getId();
+    return "https://lh3.googleusercontent.com/d/" + fileId;
+  }
+  return "";
 }
 
-function updateSheet(formData) {
+function updateSheet(formData, sheetName = "wakura") {
   const fileUrl = uploadFile(formData);
   const sheet =
-    SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName("Events");
+    SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(sheetName);
   sheet.appendRow([
     formData.year,
     formData.era,
@@ -110,7 +111,8 @@ function updateSheet(formData) {
 function doPost(e) {
   try {
     const formData = e.parameter;
-    updateSheet(formData);
+    const sheetName = e.parameter.sheetName;
+    updateSheet(formData, sheetName);
 
     const output = ContentService.createTextOutput(
       JSON.stringify({
