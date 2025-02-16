@@ -1,8 +1,8 @@
 import { GAS_URL } from '../config'
 
-export async function registerEvent(formData: FormData) {
+export async function registerEvent(formData: FormData, sheetName: string) {
   try {
-    const response = await fetch(GAS_URL, {
+    const response = await fetch(`${GAS_URL}?sheetName=${sheetName}`, {
       method: "POST",
       body: formData,
     });

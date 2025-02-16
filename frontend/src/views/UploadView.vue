@@ -84,6 +84,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { registerEvent } from '@/services/registerEvent'
+import { useRoute } from 'vue-router'
 
 const form = ref(null)
 const year = ref('')
@@ -98,6 +99,8 @@ const thumbnail = ref<string | null>(null)
 const isSubmitting = ref(false)
 const successDialog = ref(false)
 
+const route = useRoute()
+const id = route.query.id ?? 'wakura'
 // カテゴリの選択肢
 const categories = ['郷土', '国']
 
@@ -173,7 +176,7 @@ async function uploadData() {
   }
 
   try {
-    const response = await registerEvent(formData)
+    const response = await registerEvent(formData, id)
 
     if (response.status === 'success') {
       successDialog.value = true

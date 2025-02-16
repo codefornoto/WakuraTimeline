@@ -92,10 +92,10 @@ function uploadFile(formData) {
   return "";
 }
 
-function updateSheet(formData) {
+function updateSheet(formData, sheetName = "wakura") {
   const fileUrl = uploadFile(formData);
   const sheet =
-    SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName("Events");
+    SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(sheetName);
   sheet.appendRow([
     formData.year,
     formData.era,
@@ -111,7 +111,8 @@ function updateSheet(formData) {
 function doPost(e) {
   try {
     const formData = e.parameter;
-    updateSheet(formData);
+    const sheetName = e.parameter.sheetName;
+    updateSheet(formData, sheetName);
 
     const output = ContentService.createTextOutput(
       JSON.stringify({
