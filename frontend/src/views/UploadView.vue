@@ -1,65 +1,131 @@
 <template>
-  <v-container fluid class="p-4 md:p-8">
-    <v-form ref="form" @submit.prevent="uploadData" class="upload-form">
-      <h3 class="text-lg md:text-2xl">イベント登録</h3>
-      <v-text-field
-        v-model="year"
-        label="西暦(（例：1990 不明な場合は「～頃」「不詳」も可）)"
-        variant="underlined"
-        class="mb-4"
-      ></v-text-field>
-      <v-text-field
-        v-model="era"
-        label="和暦（例：平成2年　不明な場合は「平成年間」「不詳」も可）"
-        variant="underlined"
-        class="mb-4"
-      ></v-text-field>
-      <v-select
-        v-model="category"
-        :items="categories"
-        label="カテゴリ (category)"
-        variant="underlined"
-        class="mb-4"
-      ></v-select>
-      <v-text-field
-        v-model="event"
-        label="思い出や出来事"
-        variant="underlined"
-        class="mb-4"
-      ></v-text-field>
-      <v-text-field v-model="etc" label="備考" variant="underlined" class="mb-4"></v-text-field>
-      <!-- <v-text-field
-        v-model="genre"
-        label="ジャンル (genre)"
-        variant="underlined"
-        class="mb-4"
-      ></v-text-field>
-      <v-text-field
-        v-model="reference"
-        label="参照 (reference)"
-        variant="underlined"
-        class="mb-4"
-      ></v-text-field> -->
-      <div class="flex items-center mb-4 flex-col md:flex-row">
-        <v-file-input
-          v-model="image"
-          label="画像 (image)"
-          accept="image/*"
-          variant="underlined"
-          @change="previewImage"
-          class="flex-1 mr-2"
-        >
-        </v-file-input>
-        <img
-          v-if="thumbnail"
-          :src="thumbnail"
-          alt="サムネイル"
-          class="w-full max-w-xs"
-          width="350px"
-        />
-      </div>
-      <v-btn color="primary" type="submit" :disabled="isSubmitting">アップロード</v-btn>
-    </v-form>
+  <v-container fluid>
+    <h2 class="text-lg md:text-2xl">イベント登録</h2>
+    <v-row>
+      <v-col cols="0" md="3"></v-col>
+      <v-col cols="12" md="6">
+        <v-form ref="form" @submit.prevent="uploadData" class="upload-form">
+          <v-row>
+            <v-col cols="6" md="6" class="py-0">
+              <v-row>
+                <v-col cols="12" class="pb-0">
+                  <v-text-field
+                    v-model="year"
+                    label="西暦(例: 1990)"
+                    variant="outlined"
+                    density="compact"
+                  >
+                  </v-text-field>
+                </v-col>
+              </v-row>
+            </v-col>
+            <v-col cols="6" md="6" class="py-0">
+              <v-text-field
+                v-model="era"
+                label="和暦(例:平成2年)"
+                variant="outlined"
+                density="compact"
+              />
+            </v-col>
+            <v-col cols="12" class="pt-0 text-right">
+              <small>※不明な場合は「～頃」「不詳」と入力してください。</small>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" class="py-0">
+              <v-text-field
+                v-model="event"
+                label="思い出や出来事"
+                variant="outlined"
+                density="compact"
+              />
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" md="6" class="py-0">
+              <v-select
+                v-model="category"
+                :items="categories"
+                label="カテゴリ (category)"
+                variant="outlined"
+                density="compact"
+              />
+            </v-col>
+            <v-col cols="12" md="6" class="py-0">
+              <v-text-field v-model="etc" label="備考" variant="outlined" density="compact" />
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" md="4" class="py-0">
+              <v-file-input
+                v-model="image"
+                label="画像 (image)"
+                accept="image/*"
+                variant="outlined"
+                @change="previewImage"
+                class="flex-1 mr-2"
+                density="compact"
+              >
+              </v-file-input>
+            </v-col>
+            <v-col cols="12" md="8" class="py-0">
+              <img
+                v-if="thumbnail"
+                :src="thumbnail"
+                alt="サムネイル"
+                class="w-full max-w-xs"
+                width="350px"
+              />
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" md="4">
+              <v-row>
+                <v-col cols="12" class="py-0">
+                  <v-text-field
+                    v-model="latitude"
+                    label="緯度"
+                    variant="outlined"
+                    density="compact"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" class="py-0">
+                  <v-text-field
+                    v-model="longitude"
+                    label="経度"
+                    variant="outlined"
+                    density="compact"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+            </v-col>
+            <v-col cols="12" md="8" class="py-0">
+              <LeafletMap
+                :lat="latitude"
+                :long="longitude"
+                @update:lat="
+                  (value: number) => {
+                    latitude = value
+                  }
+                "
+                @update:long="
+                  (value: number) => {
+                    longitude = value
+                  }
+                "
+              />
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col>
+              <v-btn color="primary" type="submit" :disabled="isSubmitting" block>
+                アップロード
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-form>
+      </v-col>
+    </v-row>
 
     <v-dialog v-model="isSubmitting" persistent>
       <v-card>
@@ -85,10 +151,15 @@
 import { ref } from 'vue'
 import { registerEvent } from '@/services/registerEvent'
 import { useRoute } from 'vue-router'
+import { compressImage } from '@/utils/imageUtils'
+import LeafletMap from '../components/LeafletMap.vue'
 
 const form = ref(null)
 const year = ref('')
 const era = ref('')
+const latitude = ref(37.39225471283128)
+const longitude = ref(136.9037461280823)
+
 const category = ref('郷土')
 const event = ref('')
 const etc = ref('')
@@ -103,45 +174,6 @@ const route = useRoute()
 const id = route.query.id ?? 'wakura'
 // カテゴリの選択肢
 const categories = ['郷土', '国']
-
-async function compressImage(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onload = function (e) {
-      const img = new Image()
-      img.onload = function () {
-        const canvas = document.createElement('canvas')
-        const MAX_WIDTH = 800
-        const MAX_HEIGHT = 600
-        let width = img.width
-        let height = img.height
-
-        if (width > height) {
-          if (width > MAX_WIDTH) {
-            height *= MAX_WIDTH / width
-            width = MAX_WIDTH
-          }
-        } else {
-          if (height > MAX_HEIGHT) {
-            width *= MAX_HEIGHT / height
-            height = MAX_HEIGHT
-          }
-        }
-        canvas.width = width
-        canvas.height = height
-        const ctx = canvas.getContext('2d')
-        ctx?.drawImage(img, 0, 0, width, height)
-
-        const dataURL = canvas.toDataURL('image/jpeg', 0.7)
-        resolve(dataURL)
-      }
-      img.onerror = reject
-      img.src = e.target?.result as string
-    }
-    reader.onerror = reject
-    reader.readAsDataURL(file)
-  })
-}
 
 async function previewImage() {
   if (image.value) {
@@ -174,6 +206,8 @@ async function uploadData() {
     formData.append('imageData', '')
     formData.append('imageName', '')
   }
+  formData.append('latitude', latitude.value.toString())
+  formData.append('longitude', longitude.value.toString())
   try {
     const response = await registerEvent(formData, id as string)
 
@@ -192,9 +226,4 @@ async function uploadData() {
 }
 </script>
 
-<style scoped>
-.upload-form {
-  max-width: 600px; /* 最大幅を設定 */
-  margin: auto; /* 中央揃え */
-}
-</style>
+<style scoped></style>
