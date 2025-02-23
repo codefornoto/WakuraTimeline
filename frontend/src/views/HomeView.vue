@@ -24,7 +24,7 @@ async function fetchData() {
 onMounted(async () => {
   setTimeout(() => {
     loading.value = false
-  }, 3000)
+  }, 2000)
 
   await fetchData()
 })

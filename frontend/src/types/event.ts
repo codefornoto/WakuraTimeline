@@ -7,4 +7,6 @@ export interface eventType {
   genre: string
   reference: string
   image: string
+  latitude: number
+  longitude: number
 }

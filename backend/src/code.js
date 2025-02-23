@@ -7,73 +7,55 @@ function doGet(e) {
   const sheetName = e.parameter.sheetName;
   const response = getSheetData(sheetName, e).getContent();
 
-  return ContentService.createTextOutput(response).setMimeType(
-    ContentService.MimeType.JSON
-  );
+  return createTextOutput(response);
 }
 
 function getSheetData(sheetName, e) {
   const sheet = SpreadsheetApp.openByUrl(sheetUrl).getSheetByName(sheetName);
   const data = sheet.getDataRange().getValues();
-  const headers = data[0];
-  const yearIndex = headers.indexOf("西暦");
-  const eraIndex = headers.indexOf("年号");
-  const categoryIndex = headers.indexOf("区分");
-  const eventIndex = headers.indexOf("出来事");
-  const etcIndex = headers.indexOf("補足情報");
-  const genreIndex = headers.indexOf("ジャンル");
-  const referenceIndex = headers.indexOf("出典");
-  const imageIndex = headers.indexOf("画像URL");
+  const headersRow = data[0];
+  const headers = {
+    yearIndex: headersRow.indexOf("西暦"),
+    eraIndex: headersRow.indexOf("年号"),
+    categoryIndex: headersRow.indexOf("区分"),
+    eventIndex: headersRow.indexOf("出来事"),
+    etcIndex: headersRow.indexOf("補足情報"),
+    genreIndex: headersRow.indexOf("ジャンル"),
+    referenceIndex: headersRow.indexOf("出典"),
+    imageIndex: headersRow.indexOf("画像URL"),
+    latitude: headersRow.indexOf("緯度"),
+    longitude: headersRow.indexOf("経度"),
+  };
   const items = [];
 
   // ヘッダー行をスキップしてデータを処理
   for (let i = 1; i < data.length; i++) {
     const row = data[i];
     let item;
-    item = setJsonKey(
-      row,
-      headers,
-      yearIndex,
-      eraIndex,
-      categoryIndex,
-      eventIndex,
-      etcIndex,
-      genreIndex,
-      referenceIndex,
-      imageIndex
-    );
+    item = setJsonKey(row, headers);
     items.push(item);
   }
 
-  return ContentService.createTextOutput(
+  return createTextOutput(
     JSON.stringify({
       status: "success",
       data: items,
     })
-  ).setMimeType(ContentService.MimeType.JSON);
+  );
 }
 
-function setJsonKey(
-  row,
-  headers,
-  yearIndex,
-  eraIndex,
-  categoryIndex,
-  eventIndex,
-  etcIndex,
-  genreIndex,
-  referenceIndex,
-  imageIndex
-) {
+function setJsonKey(row, headers) {
   return {
-    year: row[yearIndex],
-    era: row[eraIndex],
-    category: row[categoryIndex],
-    event: row[eventIndex],
-    etc: row[etcIndex],
-    genre: row[genreIndex],
-    reference: row[referenceIndex],
-    image: row[imageIndex],
+    year: row[headers.yearIndex],
+    era: row[headers.eraIndex],
+    category: row[headers.categoryIndex],
+    event: row[headers.eventIndex],
+    etc: row[headers.etcIndex],
+    genre: row[headers.genreIndex],
+    reference: row[headers.referenceIndex],
+    image: row[headers.imageIndex],
+    latitude: row[headers.latitude],
+    longitude: row[headers.longitude],
   };
 }
 
@@ -105,6 +87,8 @@ function updateSheet(formData, sheetName = "wakura") {
     formData.genre,
     formData.reference,
     fileUrl,
+    formData.latitude,
+    formData.longitude,
   ]);
 }
 
@@ -114,20 +98,31 @@ function doPost(e) {
     const sheetName = e.parameter.sheetName;
     updateSheet(formData, sheetName);
 
-    const output = ContentService.createTextOutput(
+    return createTextOutput(
       JSON.stringify({
         status: "success",
         data: null,
       })
-    ).setMimeType(ContentService.MimeType.JSON);
-
-    return output;
+    );
   } catch (error) {
-    return ContentService.createTextOutput(
+    return createTextOutput(
       JSON.stringify({
         status: "error",
         message: error.toString(),
       })
-    ).setMimeType(ContentService.MimeType.JSON);
+    );
   }
+}
+
+function testGet() {
+  const sheetName = "wakura";
+  const e = { parameter: { sheetName: sheetName } };
+  const result = getSheetData(sheetName, e).getContent();
+  Logger.log(result);
+}
+
+function createTextOutput(content) {
+  return ContentService.createTextOutput(content).setMimeType(
+    ContentService.MimeType.JSON
+  );
 }

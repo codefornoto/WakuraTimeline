@@ -8,13 +8,13 @@ interface gasResponse {
 
 export const getGSData = async (id: string) => {
   try {
-    console.log(id)
     const response = await fetch(`${GAS_URL}?sheetName=${id}`, {
       method: 'GET',
     })
     const data: gasResponse = await response.json()
 
     if (data.status === 'success') {
+      console.log(data.data)
       return data.data
     }
     throw new Error('Failed to fetch markers')
